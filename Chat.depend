@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1413927954 source:/home/maximilian/uni/verteilte_systeme/Chat/main.cpp
+	<iostream>
+	<iomanip>
+	<cmath>
+	<termios.h>
+	<stdio.h>
+	<sys/ioctl.h>
+	<stdio.h>
+	<unistd.h>
+
