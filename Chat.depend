@@ -1,11 +1,18 @@
 # depslib dependency file v1.0
-1413927954 source:/home/maximilian/uni/verteilte_systeme/Chat/main.cpp
+1413991373 source:/home/maximilian/uni/verteilte_systeme/Chat/main.cpp
+	<iostream>
+	"ConsoleHelper.hpp"
+
+1413991293 /home/maximilian/uni/verteilte_systeme/Chat/ConsoleHelper.hpp
+	<string>
+	<termios.h>
+
+1413991360 source:/home/maximilian/uni/verteilte_systeme/Chat/ConsoleHelper.cpp
+	<sys/ioctl.h>
+	<unistd.h>
 	<iostream>
 	<iomanip>
 	<cmath>
-	<termios.h>
-	<stdio.h>
-	<sys/ioctl.h>
-	<stdio.h>
-	<unistd.h>
+	<cstdio>
+	"ConsoleHelper.hpp"
 
