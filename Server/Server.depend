@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1414088933 source:/home/maximilian/uni/verteilte_systeme/Chat/Server/main.cpp
+	<iostream>
+	<arpa/inet.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<cstring>
+	<cerrno>
+	"../shared/Message.hpp"
+
+1414083276 /home/maximilian/uni/verteilte_systeme/Chat/shared/Message.hpp
+	<cstdint>
+

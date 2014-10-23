@@ -13,8 +13,6 @@
 
 int main() {
 
-    ConsoleHelper consoleHelper;
-
     const std::string ipAddress = "127.0.0.1";
     const uint16_t port = 39999;
 
@@ -42,50 +40,58 @@ int main() {
     /** The above could also work with getaddrinfo() and localhost */
 
 
-    uint32_t messageNumber = 1;
-    messageNumber = htonl(messageNumber); // convert memory layout to Network Byte Order
+    uint32_t messageNumber = 0;
 
-    // Assemble the message
     message_t messageToSend;
-    std::memset(&messageToSend, 0, sizeof(messageToSend));
 
-    messageToSend.message_number = messageNumber;
-    std::strncpy(messageToSend.user_name, "Max", sizeof(messageToSend.user_name));
-    std::strncpy(messageToSend.message, "The Cheese is in the Toaster", sizeof(messageToSend.message));
-
-//    std::cout << "Size: " << sizeof(messageToSend) << std::endl;
-//    std::cout << "Size: " << sizeof(messageToSend.message) << std::endl;
-
-    // convert the message into a raw byte array
+    // reserve some memory for the raw byte array
     void* data = (unsigned char*)malloc(sizeof(messageToSend));
-    std::memcpy(data, &messageToSend, sizeof(messageToSend));
 
-    // sent the data
-    int numberOfSentBytes = sendto(socketFileDescriptor,            // the socket we want to use
-                                   data,                            // the data we want to send
-                                   sizeof(messageToSend),           // the length of the data
-                                   0,                               // flags
-                                   (struct sockaddr *) &server,     // where to send it to
-                                   sizeof(server));                 // address length
+    // get the users name
+    ConsoleHelper consoleHelper;
+    std::cout << "Welcome to the chat client!" << std::endl;
+    std::cout << "Please input your name. (Press enter to confirm)" << std::endl;
+    std::string name = consoleHelper.getLimitedInput(sizeof(messageToSend.user_name) - 1); // minus one for the \0 terminating the string
+    std::cout << "Hello " << name << "!" << std::endl;
 
-    if (numberOfSentBytes == -1) {
-        std::cout << "Could not send data. Error: " << std::strerror(errno) << std::endl;
-        return 1;
+    while (true) {
+        // increment the message number
+        messageNumber = ntohl(messageNumber);
+        messageNumber++;
+        messageNumber = htonl(messageNumber); // convert memory layout to Network Byte Order
+
+        // Assemble the message
+        std::memset(&messageToSend, 0, sizeof(messageToSend));
+
+        messageToSend.message_number = messageNumber;
+        std::strncpy(messageToSend.user_name, name.c_str(), sizeof(messageToSend.user_name));
+
+        std::cout << std::endl << "Please input your message. (Press enter to send)" << std::endl;
+        std::string messageString = consoleHelper.getLimitedInput(sizeof(messageToSend.message) - 1);
+
+        std::strncpy(messageToSend.message, messageString.c_str(), sizeof(messageToSend.message));
+
+
+        // convert the message into a raw byte array
+        std::memcpy(data, &messageToSend, sizeof(messageToSend));
+
+        // sent the data
+        int numberOfSentBytes = sendto(socketFileDescriptor,            // the socket we want to use
+                                       data,                            // the data we want to send
+                                       sizeof(messageToSend),           // the length of the data
+                                       0,                               // flags
+                                       (struct sockaddr *) &server,     // where to send it to
+                                       sizeof(server));                 // address length
+
+        if (numberOfSentBytes == -1) {
+            std::cout << "Could not send data. Error: " << std::strerror(errno) << std::endl;
+            return 1;
+        }
+
     }
 
     // free the memory we reserved for the data
     free(data);
-
-
-
-//    std::cout << "Please input your name. (Press enter to confirm)" << std::endl;
-//    std::string name = consoleHelper.getLimitedInput(8);
-//    std::cout << "Hello " << name << "!" << std::endl;
-//
-//    std::cout << "Please input your message. (Press enter to send)" << std::endl;
-//    std::string messageString = consoleHelper.getLimitedInput(137);
-//
-//    std::cout << messageString.length() << std::endl;
 
     return 0;
 }
