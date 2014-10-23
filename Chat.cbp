@@ -32,6 +32,8 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename=".gitignore" />
+		<Unit filename="ConsoleHelper.cpp" />
+		<Unit filename="ConsoleHelper.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
