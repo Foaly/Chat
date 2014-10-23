@@ -9,13 +9,7 @@
 #include <cstdlib>
 
 #include "ConsoleHelper.hpp"
-
-typedef struct {
-    uint32_t message_number;
-    char user_name[8];
-    char message[138];
-} message_t;
-
+#include "../shared/Message.hpp"
 
 int main() {
 
@@ -95,10 +89,3 @@ int main() {
 
     return 0;
 }
-
-/** This is needed for the server */
-//    char str[INET_ADDRSTRLEN];
-//    // now get it back and print it
-//    inet_ntop(AF_INET, &(sa.sin_addr), str, INET_ADDRSTRLEN);
-//
-//    std::cout << str << std::endl; // prints "192.0.2.33"

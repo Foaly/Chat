@@ -31,6 +31,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="../shared/Message.hpp" />
 		<Unit filename="ConsoleHelper.cpp" />
 		<Unit filename="ConsoleHelper.hpp" />
 		<Unit filename="main.cpp" />
