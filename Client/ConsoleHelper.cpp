@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <iostream>
 #include <iomanip>
-#include <cmath>
 #include <cstdio>
 
 #include "ConsoleHelper.hpp"
@@ -18,9 +17,14 @@ std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacter
     enableUnbufferedConsole();
 
     int characterCount = maximumNumberOfCharacters;
+    std::string messageString;
+
+    // save the current cursors position, so we know where we started
+    std::cout << "\33[s";
+
+    // display the remaining amount of characters
     const int numberOfDigits = getNumberOfDigits(maximumNumberOfCharacters);
     std::cout << "[" << std::setw(numberOfDigits) << characterCount << "] : ";
-    std::string messageString;
 
     while (true) {
         char c = getchar();
@@ -64,19 +68,8 @@ std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacter
             }
         }
 
-        // check if we are spanning over multiple lines
-        int linesToClear = std::floor((messageString.length() + 6) / getConsoleWidth());
-
-        // clear appropriately
-        if(linesToClear > 0) {
-            std::cout << "\33[" << linesToClear << "A"; // move up the right number of lines
-            std::cout << "\r"; // move to the beginning of the line
-            std::cout << "\33[0J"; // clear screen from the cursor down
-        }
-        else {
-            std::cout << "\33[2K"; // delete the current line
-            std::cout << "\r"; // move to the beginning of the line
-        }
+        std::cout << "\33[u"; // restore the cursors position (to where it was when we first started typing)
+        std::cout << "\33[0J"; // clear screen from the cursor down
 
 
         std::cout << "[" << std::setw(numberOfDigits) << characterCount << "] : "; // display how many characters are left
