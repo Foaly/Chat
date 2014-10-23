@@ -40,16 +40,16 @@ int main() {
     while (true) {
         /* create a buffer the size of a message */
         char buffer[sizeof(message_t)];
-        struct sockaddr_in clientAddress;
-        int len = sizeof(struct sockaddr);
+        struct sockaddr_in senderAddress;
+        int senderAddressLength = sizeof(struct sockaddr);
 
         /* receive the data */
         int numberOfReceivedBytes = recvfrom(socketFileDescriptor,                      // socket we want to receive on
                                              buffer,                                    // buffer for the data
                                              sizeof (buffer),                           // size of the buffer
                                              0,                                         // flags
-                                             (struct sockaddr *)&clientAddress,         // who sent the data
-                                             (socklen_t *) &len);      // length of the struct
+                                             (struct sockaddr *)&senderAddress,         // who sent the data
+                                             (socklen_t *) &senderAddressLength);       // length of the struct
 
         if (numberOfReceivedBytes == -1) {
             std::cout << "Could not receive data. Error: " << std::strerror(errno) << std::endl;
@@ -61,11 +61,11 @@ int main() {
 
         // convert the senders IP address into a string
         char ipAddress[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &(clientAddress.sin_addr), ipAddress, INET_ADDRSTRLEN);
+        inet_ntop(AF_INET, &(senderAddress.sin_addr), ipAddress, INET_ADDRSTRLEN);
 
         // print the received message
         std::cout  << std::endl;
-        std::cout << "The user \"" << receivedMessage->user_name << "\" (" << ipAddress << ":" << ntohs(clientAddress.sin_port) << ") sends " << numberOfReceivedBytes << " Bytes." << std::endl;
+        std::cout << "The user \"" << receivedMessage->user_name << "\" (" << ipAddress << ":" << ntohs(senderAddress.sin_port) << ") sends " << numberOfReceivedBytes << " Bytes." << std::endl;
         std::cout << "Message #" << ntohl(receivedMessage->message_number) << ":" << std::endl;
         std::cout << receivedMessage->message << std::endl;
     }

@@ -18,15 +18,15 @@ int main() {
 
 
     // create a struct to store the servers address (IP address, port, etc.)
-    struct sockaddr_in server;
+    struct sockaddr_in receiverAddress;
     // zero out the memory
-    std::memset(&server, 0, sizeof(server));
+    std::memset(&receiverAddress, 0, sizeof(receiverAddress));
 
     // convert the IP address from a string to an integer in the correct byte order and store it in the struct
-    inet_pton(AF_INET, ipAddress.c_str(), &(server.sin_addr));
+    inet_pton(AF_INET, ipAddress.c_str(), &(receiverAddress.sin_addr));
 
-    server.sin_family = AF_INET;          // ipv4
-    server.sin_port = htons(port);        // set the receivers port
+    receiverAddress.sin_family = AF_INET;          // ipv4
+    receiverAddress.sin_port = htons(port);        // set the receivers port
 
 
     // create a IPv4, datagram (UDP) socket
@@ -66,9 +66,11 @@ int main() {
         messageToSend.message_number = messageNumber;
         std::strncpy(messageToSend.user_name, name.c_str(), sizeof(messageToSend.user_name));
 
+        // get the message from the user
         std::cout << std::endl << "Please input your message. (Press enter to send)" << std::endl;
         std::string messageString = consoleHelper.getLimitedInput(sizeof(messageToSend.message) - 1);
 
+        // copy it into our struct
         std::strncpy(messageToSend.message, messageString.c_str(), sizeof(messageToSend.message));
 
 
@@ -76,12 +78,12 @@ int main() {
         std::memcpy(data, &messageToSend, sizeof(messageToSend));
 
         // sent the data
-        int numberOfSentBytes = sendto(socketFileDescriptor,            // the socket we want to use
-                                       data,                            // the data we want to send
-                                       sizeof(messageToSend),           // the length of the data
-                                       0,                               // flags
-                                       (struct sockaddr *) &server,     // where to send it to
-                                       sizeof(server));                 // address length
+        int numberOfSentBytes = sendto(socketFileDescriptor,                    // the socket we want to use
+                                       data,                                    // the data we want to send
+                                       sizeof(messageToSend),                   // the length of the data
+                                       0,                                       // flags
+                                       (struct sockaddr *) &receiverAddress,    // where to send it to
+                                       sizeof(receiverAddress));                // address length
 
         if (numberOfSentBytes == -1) {
             std::cout << "Could not send data. Error: " << std::strerror(errno) << std::endl;
