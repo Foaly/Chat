@@ -33,8 +33,8 @@ int main() {
     // convert the IP address from a string to an integer in the correct byte order and store it in the struct
     inet_pton(AF_INET, ipAddress.c_str(), &(server.sin_addr));
 
-    server.sin_family = AF_INET;                         // ipv4
-    server.sin_port = htons(port);                // set port address (is this the sender's port or the receiver's port
+    server.sin_family = AF_INET;          // ipv4
+    server.sin_port = htons(port);        // set the receivers port
 
 
     // create a IPv4, datagram (UDP) socket
@@ -59,8 +59,8 @@ int main() {
     std::strncpy(messageToSend.user_name, "Max", sizeof(messageToSend.user_name));
     std::strncpy(messageToSend.message, "The Cheese is in the Toaster", sizeof(messageToSend.message));
 
-    std::cout << "Size: " << sizeof(messageToSend) << std::endl;
-    std::cout << "Size: " << sizeof(messageToSend.message) << std::endl;
+//    std::cout << "Size: " << sizeof(messageToSend) << std::endl;
+//    std::cout << "Size: " << sizeof(messageToSend.message) << std::endl;
 
     // convert the message into a raw byte array
     void* data = (unsigned char*)malloc(sizeof(messageToSend));

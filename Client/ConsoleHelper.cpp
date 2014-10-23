@@ -13,7 +13,7 @@ ConsoleHelper::ConsoleHelper() : m_isBuffered(false)
 }
 
 
-std::string ConsoleHelper::getLimitedInput(int maximumNumberOfCharacters)
+std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacters)
 {
     enableUnbufferedConsole();
 

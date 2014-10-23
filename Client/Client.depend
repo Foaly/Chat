@@ -22,3 +22,26 @@
 	<cstdio>
 	"ConsoleHelper.hpp"
 
+1414080309 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/main.cpp
+	<iostream>
+	<arpa/inet.h>
+	<sys/types.h>
+	<sys/socket.h>
+	<cstring>
+	<cerrno>
+	<cstdlib>
+	"ConsoleHelper.hpp"
+
+1414081079 /home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.hpp
+	<string>
+	<termios.h>
+
+1414081079 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.cpp
+	<sys/ioctl.h>
+	<unistd.h>
+	<iostream>
+	<iomanip>
+	<cmath>
+	<cstdio>
+	"ConsoleHelper.hpp"
+
