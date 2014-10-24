@@ -20,7 +20,7 @@ std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacter
     std::string messageString;
 
     // save the current cursors position, so we know where we started
-    std::cout << "\33[s";
+    std::cout << "\e7";
 
     // display the remaining amount of characters
     const int numberOfDigits = getNumberOfDigits(maximumNumberOfCharacters);
@@ -42,11 +42,11 @@ std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacter
 
                 // left arrow key
                 if (codeChar == 68) {
-                    std::cout << "\33[D"; // move cursor left
+                    std::cout << "\e[D"; // move cursor left
                 }
                 // right arrow key
                 else if (codeChar == 67) {
-                    std::cout << "\33[C"; // move cursor right
+                    std::cout << "\e[C"; // move cursor right
                 }
             }
 
@@ -68,8 +68,8 @@ std::string ConsoleHelper::getLimitedInput(unsigned int maximumNumberOfCharacter
             }
         }
 
-        std::cout << "\33[u"; // restore the cursors position (to where it was when we first started typing)
-        std::cout << "\33[0J"; // clear screen from the cursor down
+        std::cout << "\e8"; // restore the cursors position (to where it was when we first started typing)
+        std::cout << "\e[0J"; // clear screen from the cursor down
 
 
         std::cout << "[" << std::setw(numberOfDigits) << characterCount << "] : "; // display how many characters are left
