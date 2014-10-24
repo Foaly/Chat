@@ -44,10 +44,6 @@ int main() {
 
     messagePacket messageToSend;
 
-    // reserve some memory for the raw byte array
-//    void* data = (unsigned char*)malloc(sizeof(messageToSend));
-    unsigned char* data = new unsigned char[sizeof(messageToSend)];
-
     // get the users name
     ConsoleHelper consoleHelper;
     std::cout << "Welcome to the chat client!" << std::endl;
@@ -61,6 +57,10 @@ int main() {
         return 0;
     }
     std::cout << "Hello " << name << "!" << std::endl;
+
+    // reserve some memory for the raw byte array
+//    void* data = (unsigned char*)malloc(sizeof(messageToSend));
+    unsigned char* data = new unsigned char[sizeof(messageToSend)];
 
     while (true) {
         // increment the message number
