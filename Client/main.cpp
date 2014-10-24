@@ -42,10 +42,11 @@ int main() {
 
     uint32_t messageNumber = 0;
 
-    message_t messageToSend;
+    messagePacket messageToSend;
 
     // reserve some memory for the raw byte array
-    void* data = (unsigned char*)malloc(sizeof(messageToSend));
+//    void* data = (unsigned char*)malloc(sizeof(messageToSend));
+    unsigned char* data = new unsigned char[sizeof(messageToSend)];
 
     // get the users name
     ConsoleHelper consoleHelper;
@@ -93,7 +94,8 @@ int main() {
     }
 
     // free the memory we reserved for the data
-    free(data);
+//    free(data);
+    delete[] data;
 
     return 0;
 }

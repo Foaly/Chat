@@ -39,7 +39,7 @@ int main() {
 
     while (true) {
         /* create a buffer the size of a message */
-        char buffer[sizeof(message_t)];
+        char buffer[sizeof(messagePacket)];
         struct sockaddr_in senderAddress;
         int senderAddressLength = sizeof(struct sockaddr);
 
@@ -56,7 +56,7 @@ int main() {
             return 1;
         }
         // cast the received data into our message format
-        message_t* receivedMessage = (message_t *) buffer;
+        messagePacket* receivedMessage = (messagePacket *) buffer;
 
 
         // convert the senders IP address into a string
