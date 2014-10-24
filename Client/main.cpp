@@ -52,7 +52,14 @@ int main() {
     ConsoleHelper consoleHelper;
     std::cout << "Welcome to the chat client!" << std::endl;
     std::cout << "Please input your name. (Press enter to confirm)" << std::endl;
-    std::string name = consoleHelper.getLimitedInput(sizeof(messageToSend.user_name) - 1); // minus one for the \0 terminating the string
+    std::string name;
+    const bool nameInputWasSuccessful = consoleHelper.getLimitedInput(name, sizeof(messageToSend.user_name) - 1); // minus one for the \0 terminating the string
+
+    // if the input was canceled exit
+    if (!nameInputWasSuccessful) {
+        std::cout << "Good Bye!" << std::endl;
+        return 0;
+    }
     std::cout << "Hello " << name << "!" << std::endl;
 
     while (true) {
@@ -69,7 +76,13 @@ int main() {
 
         // get the message from the user
         std::cout << std::endl << "Please input your message. (Press enter to send)" << std::endl;
-        std::string messageString = consoleHelper.getLimitedInput(sizeof(messageToSend.message) - 1);
+        std::string messageString;
+        bool messageInputWasSuccessful = consoleHelper.getLimitedInput(messageString, sizeof(messageToSend.message) - 1);
+
+        // if the input was canceled leave the loop
+        if(!messageInputWasSuccessful) {
+            break;
+        }
 
         // copy it into our struct
         std::strncpy(messageToSend.message, messageString.c_str(), sizeof(messageToSend.message));
@@ -92,6 +105,9 @@ int main() {
         }
 
     }
+
+    std::cout << std::endl << "Chat is closing." << std::endl;
+    std::cout << "Goody Bye!" << std::endl;
 
     // free the memory we reserved for the data
 //    free(data);

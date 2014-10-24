@@ -11,7 +11,7 @@ class ConsoleHelper {
 public:
 
     ConsoleHelper();
-    std::string getLimitedInput(unsigned int maximumNumberOfCharacters);
+    bool getLimitedInput(std::string& result, unsigned int maximumNumberOfCharacters);
     unsigned int getConsoleWidth();
 
 private:

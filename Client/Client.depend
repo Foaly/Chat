@@ -22,7 +22,7 @@
 	<cstdio>
 	"ConsoleHelper.hpp"
 
-1414136304 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/main.cpp
+1414185270 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/main.cpp
 	<iostream>
 	<arpa/inet.h>
 	<sys/types.h>
@@ -33,16 +33,19 @@
 	"ConsoleHelper.hpp"
 	"../shared/Message.hpp"
 
-1414081079 /home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.hpp
+1414184661 /home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.hpp
 	<string>
 	<termios.h>
 
-1414168550 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.cpp
+1414185929 source:/home/maximilian/uni/verteilte_systeme/Chat/Client/ConsoleHelper.cpp
 	<sys/ioctl.h>
 	<unistd.h>
+	<csignal>
 	<iostream>
 	<iomanip>
 	<cstdio>
+	<sys/time.h>
+	<cstring>
 	"ConsoleHelper.hpp"
 
 1414136304 /home/maximilian/uni/verteilte_systeme/Chat/shared/Message.hpp
