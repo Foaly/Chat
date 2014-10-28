@@ -121,6 +121,7 @@ bool ConsoleHelper::getLimitedInput(std::string& result, unsigned int maximumNum
             std::cout << "\e[0J"; // clear screen from the cursor down
             std::cout << std::endl;
 
+            restoreConsoleSettings();
             return false;
         }
         else if (c == 127) {
@@ -174,6 +175,8 @@ void ConsoleHelper::enableUnbufferedConsole()
         newConsoleSettings.c_lflag &= ~ICANON; /* disable buffered i/o */
         newConsoleSettings.c_lflag &= ~ECHO; /* turn off echo mode */
         tcsetattr(0, TCSANOW, &newConsoleSettings); /* use these new terminal i/o settings now */
+
+        m_isBuffered = true;
     }
 }
 
@@ -183,6 +186,8 @@ void ConsoleHelper::restoreConsoleSettings()
     if (m_isBuffered) {
         /* Restore old terminal i/o settings */
         tcsetattr(0, TCSANOW, &m_oldConsolSettings);
+
+        m_isBuffered = false;
     }
 }
 
