@@ -9,18 +9,18 @@ MAKE = make
 all: client_client server_server
 
 client_client: 
-	$(MAKE) -C Client all -f Client.cbp.mak
+	$(MAKE) -C Client all -f Makefile
 
 server_server: 
-	$(MAKE) -C Server all -f Server.cbp.mak
+	$(MAKE) -C Server all -f Makefile
 
 clean: clean_client_client clean_server_server
 
 clean_client_client: 
-	$(MAKE) -C Client clean -f Client.cbp.mak
+	$(MAKE) -C Client clean -f Makefile
 
 clean_server_server: 
-	$(MAKE) -C Server clean -f Server.cbp.mak
+	$(MAKE) -C Server clean -f Makefile
 
 .PHONY: clean_client_client clean_server_server
 
