@@ -3,6 +3,9 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/unistd.h>
+#include <netdb.h>
+#include <ifaddrs.h>
 
 #include <cstring>
 #include <cerrno>
@@ -34,6 +37,70 @@ int main() {
         std::cout << "Could not bind the socket to port " << port << ". Error: " << std::strerror(errno) << std::endl;
         return 1;
     }
+
+    // get the hostname of the server
+    char hostname[128];
+    if (gethostname(hostname, sizeof(hostname)) == -1) {
+        std::cout << "Could not get the hostname of the server. Error: " << std::strerror(errno) << std::endl;
+        return 1;
+    }
+
+    struct addrinfo hints, *serverInfo, *p;
+
+    std::memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; // use AF_INET (IPv4) or AF_INET6 (IPv6) to force version
+    hints.ai_socktype = SOCK_DGRAM;
+
+    // try to get information about our hostname
+    int rv;
+    if ((rv = getaddrinfo(hostname, NULL, &hints, &serverInfo)) != 0) {
+        std::cout << "Failed to get information about the host \"" << hostname << "\". Error: " << gai_strerror(rv) << std::endl;
+        return 1;
+    }
+
+    std::cout << "IP addresses for " << hostname << ":" << std::endl;
+
+    // iterate over all the infos we got and try to extract the IP address
+    for(p = serverInfo; p != NULL; p = p->ai_next) {
+        char serverIPAddress[INET6_ADDRSTRLEN];
+        void *addr;
+        std::string ipVersion;
+
+        // get the pointer to the address itself,
+        // different fields in IPv4 and IPv6:
+        if (p->ai_family == AF_INET) { // IPv4
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+            addr = &(ipv4->sin_addr);
+            ipVersion = "IPv4";
+        } else { // IPv6
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            addr = &(ipv6->sin6_addr);
+            ipVersion = "IPv6";
+        }
+
+        // take the IP address of our hostname and convert it into a readable format
+        inet_ntop(p->ai_family, addr, serverIPAddress, sizeof(serverIPAddress));
+        std::cout << "  " << ipVersion << ": " << serverIPAddress << std::endl;
+    }
+
+    freeaddrinfo(serverInfo); // free the linked list
+
+    // this lists all available interfaces might be a little better as the above is not working as expected...
+//    struct ifaddrs *ifap, *ifa;
+//    struct sockaddr_in *sa;
+//    char *addr;
+//
+//    getifaddrs (&ifap);
+//    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+//        if (ifa->ifa_addr->sa_family==AF_INET) {
+//            sa = (struct sockaddr_in *) ifa->ifa_addr;
+//            addr = inet_ntoa(sa->sin_addr);
+//            printf("Interface: %s\tAddress: %s\n", ifa->ifa_name, addr);
+//        }
+//    }
+//
+//    freeifaddrs(ifap);
+
 
     std::cout << "Server is ready and listening on port " << port << std::endl;
 
