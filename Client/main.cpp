@@ -12,10 +12,21 @@
 #include "../shared/Message.hpp"
 
 int main() {
+    // print a welcome message
+    std::cout << "Welcome to the chat client!" << std::endl;
 
-    const std::string ipAddress = "127.0.0.1";
+    // get the IP address the user want to send to (servers IP)
+    std::cout << "Please input the IP address or hostname of the server." << std::endl;
+    std::string ipAddress;
+    std::getline(std::cin, ipAddress);
+
+    // id no IP was entered use localhost
+    if (ipAddress.empty()) {
+        std::cout << "Empty IP! 'localhost' (127.0.0.1) is used." << std::endl;
+        ipAddress = "127.0.0.1";
+    }
+
     const uint16_t port = 39999;
-
 
     // create a struct to store the servers address (IP address, port, etc.)
     struct sockaddr_in receiverAddress;
@@ -23,7 +34,12 @@ int main() {
     std::memset(&receiverAddress, 0, sizeof(receiverAddress));
 
     // convert the IP address from a string to an integer in the correct byte order and store it in the struct
-    inet_pton(AF_INET, ipAddress.c_str(), &(receiverAddress.sin_addr));
+    int addressParseResult = inet_pton(AF_INET, ipAddress.c_str(), &(receiverAddress.sin_addr));
+
+    if (addressParseResult == 0) {
+        std::cout << "Could not parse address \"" << ipAddress << "\" into a valid IP address." << std::endl;
+        return 1;
+    }
 
     receiverAddress.sin_family = AF_INET;          // ipv4
     receiverAddress.sin_port = htons(port);        // set the receivers port
@@ -46,7 +62,6 @@ int main() {
 
     // get the users name
     ConsoleHelper consoleHelper;
-    std::cout << "Welcome to the chat client!" << std::endl;
     std::cout << "Please input your name. (Press enter to confirm)" << std::endl;
     std::string name;
     const bool nameInputWasSuccessful = consoleHelper.getLimitedInput(name, sizeof(messageToSend.user_name) - 1); // minus one for the \0 terminating the string
