@@ -1,6 +1,6 @@
 #Chat
 
-This is a simple chat program for the course "Verteilte System".
+This is a simple chat program for the course "Verteilte Systeme".
 
 It is written in C++ and it uses the Unix Socket API.
 
