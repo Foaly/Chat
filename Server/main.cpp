@@ -1,11 +1,14 @@
 #include <iostream>
+#include <iomanip>
+#include <cstring>
 #include <arpa/inet.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/unistd.h>
+//#include <sys/unistd.h>
 #include <netdb.h>
 #include <ifaddrs.h>
+#include <unistd.h>
 
 #include <cstring>
 #include <cerrno>
@@ -45,64 +48,43 @@ int main() {
         return 1;
     }
 
-    struct addrinfo hints, *serverInfo, *p;
+    std::cout << "IP addresses for " << hostname << ":" << std::endl << std::endl;
 
-    std::memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; // use AF_INET (IPv4) or AF_INET6 (IPv6) to force version
-    hints.ai_socktype = SOCK_DGRAM;
+    // this lists all available interfaces might be a little better as the above is not working as expected...
+    struct ifaddrs *networkInterfaceList, *p;
 
-    // try to get information about our hostname
-    int rv;
-    if ((rv = getaddrinfo(hostname, NULL, &hints, &serverInfo)) != 0) {
-        std::cout << "Failed to get information about the host \"" << hostname << "\". Error: " << gai_strerror(rv) << std::endl;
-        return 1;
-    }
+    getifaddrs (&networkInterfaceList); // get information about the network interfaces
 
-    std::cout << "IP addresses for " << hostname << ":" << std::endl;
-
-    // iterate over all the infos we got and try to extract the IP address
-    for(p = serverInfo; p != NULL; p = p->ai_next) {
+    // iterate over all the network interfaces we got and try to extract their IP address
+    for(p = networkInterfaceList; p != NULL; p = p->ifa_next) {
         char serverIPAddress[INET6_ADDRSTRLEN];
         void *addr;
         std::string ipVersion;
 
         // get the pointer to the address itself,
         // different fields in IPv4 and IPv6:
-        if (p->ai_family == AF_INET) { // IPv4
-            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ai_addr;
+        if (p->ifa_addr->sa_family == AF_INET) { // IPv4
+            struct sockaddr_in *ipv4 = (struct sockaddr_in *)p->ifa_addr;
             addr = &(ipv4->sin_addr);
             ipVersion = "IPv4";
         } else { // IPv6
-            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ai_addr;
+            struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)p->ifa_addr;
             addr = &(ipv6->sin6_addr);
             ipVersion = "IPv6";
         }
 
         // take the IP address of our hostname and convert it into a readable format
-        inet_ntop(p->ai_family, addr, serverIPAddress, sizeof(serverIPAddress));
-        std::cout << "  " << ipVersion << ": " << serverIPAddress << std::endl;
+        inet_ntop(p->ifa_addr->sa_family, addr, serverIPAddress, sizeof(serverIPAddress));
+
+        // sometime the IP address is empty so only print if there is one
+        if (std::strlen(serverIPAddress) > 0)
+            std::cout << "Interface: " << std::setw(6) << std::left << p->ifa_name << " " << ipVersion << ": " << serverIPAddress << std::endl;
     }
 
-    freeaddrinfo(serverInfo); // free the linked list
-
-    // this lists all available interfaces might be a little better as the above is not working as expected...
-//    struct ifaddrs *ifap, *ifa;
-//    struct sockaddr_in *sa;
-//    char *addr;
-//
-//    getifaddrs (&ifap);
-//    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
-//        if (ifa->ifa_addr->sa_family==AF_INET) {
-//            sa = (struct sockaddr_in *) ifa->ifa_addr;
-//            addr = inet_ntoa(sa->sin_addr);
-//            printf("Interface: %s\tAddress: %s\n", ifa->ifa_name, addr);
-//        }
-//    }
-//
-//    freeifaddrs(ifap);
+    freeifaddrs(networkInterfaceList); // free the linked list
 
 
-    std::cout << "Server is ready and listening on port " << port << std::endl;
+    std::cout << std::endl << "Server is ready and listening on port " << port << std::endl;
 
     while (true) {
         /* create a buffer the size of a message */
