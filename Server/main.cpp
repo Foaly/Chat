@@ -1,17 +1,13 @@
 #include <iostream>
 #include <iomanip>
-#include <cstring>
-#include <arpa/inet.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-//#include <sys/unistd.h>
-#include <netdb.h>
-#include <ifaddrs.h>
-#include <unistd.h>
 
 #include <cstring>
 #include <cerrno>
+
+#include <arpa/inet.h>
+
+#include <ifaddrs.h>
+#include <unistd.h>
 
 #include "../shared/Message.hpp"
 
