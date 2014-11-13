@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <netdb.h>
 
 #include <cstring>
 #include <cerrno>
@@ -26,34 +27,43 @@ int main() {
         ipAddress = "127.0.0.1";
     }
 
-    const uint16_t port = 39999;
+    const char* port = "39999"; // the servers port number
 
-    // create a struct to store the servers address (IP address, port, etc.)
-    struct sockaddr_in receiverAddress;
-    // zero out the memory
-    std::memset(&receiverAddress, 0, sizeof(receiverAddress));
+    struct addrinfo hints, *serverInfo, *server;
 
-    // convert the IP address from a string to an integer in the correct byte order and store it in the struct
-    int addressParseResult = inet_pton(AF_INET, ipAddress.c_str(), &(receiverAddress.sin_addr));
+    std::memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; // use AF_INET (IPv4) or AF_INET6 (IPv6) to force version
+    hints.ai_socktype = SOCK_DGRAM;
 
-    if (addressParseResult == 0) {
-        std::cout << "Could not parse address \"" << ipAddress << "\" into a valid IP address." << std::endl;
+    // try to get a list of server responding to our hostname
+    int rv;
+    if ((rv = getaddrinfo(ipAddress.c_str(), port, &hints, &serverInfo)) != 0) {
+        std::cout << "Failed to get information about the host \"" << ipAddress << "\". Error: " << gai_strerror(rv) << std::endl;
         return 1;
     }
 
-    receiverAddress.sin_family = AF_INET;          // ipv4
-    receiverAddress.sin_port = htons(port);        // set the receivers port
+    int socketFileDescriptor;
 
+    // iterate over all the servers and try to connect to the first one we can
+    for(server = serverInfo; server != NULL; server = server->ai_next) {
+        // try to create a socket
+        socketFileDescriptor = socket(server->ai_family, server->ai_socktype, server->ai_protocol);
 
-    // create a IPv4, datagram (UDP) socket
-    int socketFileDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+        if (socketFileDescriptor == -1) {
+            std::cout << "Could not create a socket. Error: " << std::strerror(errno) << std::endl;
+            continue;
+        }
 
-    if (socketFileDescriptor == -1) {
-        std::cout << "Could not create a socket. Error: " << std::strerror(errno) << std::endl;
+        break; // if we get here, we must have connected successfully
+    }
+
+    if (server == NULL) {
+        // looped off the end of the list with no connection
+        std::cout << "Failed to connect to a server." << std::endl;
         return 1;
     }
 
-    /** The above could also work with getaddrinfo() and localhost */
+    freeaddrinfo(serverInfo); // free the linked list
 
 
     uint32_t messageNumber = 0;
@@ -111,8 +121,8 @@ int main() {
                                        data,                                    // the data we want to send
                                        sizeof(messageToSend),                   // the length of the data
                                        0,                                       // flags
-                                       (struct sockaddr *) &receiverAddress,    // where to send it to
-                                       sizeof(receiverAddress));                // address length
+                                       server->ai_addr,                         // servers address (where to send it to)
+                                       server->ai_addrlen );                    // address length
 
         if (numberOfSentBytes == -1) {
             std::cout << "Could not send data. Error: " << std::strerror(errno) << std::endl;

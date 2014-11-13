@@ -14,8 +14,12 @@
 int main() {
     const uint16_t port = 39999;
 
-    // create a IPv4, datagram (UDP) socket
-    int socketFileDescriptor = socket(PF_INET, SOCK_DGRAM, 0);
+    // create a IPv6, datagram (UDP) socket
+    int socketFileDescriptor = socket(PF_INET6, SOCK_DGRAM, 0);
+
+/** Try this on OSX and test if IPv4 works without it.*/
+//    const int no = 0;
+//    setsockopt(socketFileDescriptor, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&no, sizeof(no));
 
     if (socketFileDescriptor == -1) {
         std::cout << "Could not create a socket. Error: " << std::strerror(errno) << std::endl;
@@ -23,14 +27,13 @@ int main() {
     }
 
     /* set up socket */
-    struct sockaddr_in receivingSocket;
+    struct sockaddr_in6 receivingSocket;
     memset(&receivingSocket, 0, sizeof(receivingSocket));       // clear memory
-    receivingSocket.sin_family = AF_INET;		                // address family. must be this for ipv4, or AF_INET6 for ipv6
-    receivingSocket.sin_addr.s_addr = htonl(INADDR_ANY);        // allows socket to work send and receive on any of the machines interfaces (which machine is used to send?)
-    receivingSocket.sin_port = htons(port);		                // the port we want to receive on
+    receivingSocket.sin6_family = AF_INET6;		                // address family. must be this for ipv4, or AF_INET6 for ipv6
+    receivingSocket.sin6_port = htons(port);		                // the port we want to receive on
 
     /* bind our socket to the port  */
-    int bindResult = bind(socketFileDescriptor, (struct sockaddr *)&receivingSocket, sizeof(struct sockaddr));  // ask OS to let us use the socket
+    int bindResult = bind(socketFileDescriptor, (struct sockaddr *)&receivingSocket, sizeof(receivingSocket));  // ask OS to let us use the socket
 
     if (bindResult == -1) {
         std::cout << "Could not bind the socket to port " << port << ". Error: " << std::strerror(errno) << std::endl;
@@ -46,13 +49,16 @@ int main() {
 
     std::cout << "IP addresses for " << hostname << ":" << std::endl << std::endl;
 
-    // this lists all available interfaces might be a little better as the above is not working as expected...
     struct ifaddrs *networkInterfaceList, *p;
 
-    getifaddrs (&networkInterfaceList); // get information about the network interfaces
+    // get information about the network interfaces
+    if (getifaddrs (&networkInterfaceList)) {
+        std::cout << "Could not get information about the network interfaces. Error: " << std::strerror(errno) << std::endl;
+        return 1;
+    }
 
     // iterate over all the network interfaces we got and try to extract their IP address
-    for(p = networkInterfaceList; p != NULL; p = p->ifa_next) {
+    for (p = networkInterfaceList; p != NULL; p = p->ifa_next) {
         char serverIPAddress[INET6_ADDRSTRLEN];
         void *addr;
         std::string ipVersion;
