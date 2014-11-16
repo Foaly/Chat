@@ -29,8 +29,9 @@ int main() {
     /* set up socket */
     struct sockaddr_in6 receivingSocket;
     memset(&receivingSocket, 0, sizeof(receivingSocket));       // clear memory
-    receivingSocket.sin6_family = AF_INET6;		                // address family. must be this for ipv4, or AF_INET6 for ipv6
-    receivingSocket.sin6_port = htons(port);		                // the port we want to receive on
+    receivingSocket.sin6_family = AF_INET6;                     // address family. must be this for ipv4, or AF_INET6 for ipv6
+    receivingSocket.sin6_addr = in6addr_any;                    // allows socket to work send and receive on any of the machines interfaces (which machine is used to send?)
+    receivingSocket.sin6_port = htons(port);                    // the port we want to receive on
 
     /* bind our socket to the port  */
     int bindResult = bind(socketFileDescriptor, (struct sockaddr *)&receivingSocket, sizeof(receivingSocket));  // ask OS to let us use the socket
