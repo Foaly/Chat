@@ -63,6 +63,13 @@ int main() {
         return 1;
     }
 
+    // save the address
+    sockaddr serverAddress = *(server->ai_addr);
+    socklen_t serverAddressLength = server->ai_addrlen;
+
+    // free the linked list containing the server information
+    freeaddrinfo(serverInfo);
+
 
     uint32_t messageNumber = 0;
 
@@ -122,8 +129,8 @@ int main() {
                                        data,                                    // the data we want to send
                                        sizeof(messageToSend),                   // the length of the data
                                        0,                                       // flags
-                                       server->ai_addr,                         // servers address (where to send it to)
-                                       server->ai_addrlen );                    // address length
+                                       &serverAddress,                          // servers address (where to send it to)
+                                       serverAddressLength );                   // address length
 
         if (numberOfSentBytes == -1) {
             std::cout << "Could not send data. Error: " << std::strerror(errno) << std::endl;
@@ -134,9 +141,6 @@ int main() {
 
     std::cout << std::endl << "Chat is closing." << std::endl;
     std::cout << "Goody Bye!" << std::endl;
-    
-    // free the linked list containing the server information
-    freeaddrinfo(serverInfo);
 
     // free the memory we reserved for the data
 //    free(data);
