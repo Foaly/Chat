@@ -63,8 +63,6 @@ int main() {
         return 1;
     }
 
-    freeaddrinfo(serverInfo); // free the linked list
-
 
     uint32_t messageNumber = 0;
 
@@ -93,6 +91,9 @@ int main() {
         messageNumber++;
         messageNumber = htonl(messageNumber); // convert memory layout to Network Byte Order
 
+        // zero data array
+        std::memset(data, 0, sizeof(messageToSend));
+
         // Assemble the message
         std::memset(&messageToSend, 0, sizeof(messageToSend));
 
@@ -110,7 +111,7 @@ int main() {
         }
 
         // copy it into our struct
-        std::strncpy(messageToSend.message, messageString.c_str(), sizeof(messageToSend.message));
+        std::strncpy(messageToSend.message, messageString.c_str(), std::strlen(messageString.c_str()));
 
 
         // convert the message into a raw byte array
@@ -133,6 +134,9 @@ int main() {
 
     std::cout << std::endl << "Chat is closing." << std::endl;
     std::cout << "Goody Bye!" << std::endl;
+    
+    // free the linked list containing the server information
+    freeaddrinfo(serverInfo);
 
     // free the memory we reserved for the data
 //    free(data);
